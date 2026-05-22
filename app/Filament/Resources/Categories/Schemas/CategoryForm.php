@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -12,11 +14,21 @@ class CategoryForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nama Kategori')
                     ->required(),
-                TextInput::make('type')
+
+                Select::make('type')
+                    ->label('Tipe')
+                    ->options([
+                        'income' => 'Pemasukan',
+                        'expense' => 'Pengeluaran',
+                        'saving' => 'Tabungan'
+                    ])
+                    ->native(false)
                     ->required(),
-                TextInput::make('icon'),
-                TextInput::make('color'),
+
+                ColorPicker::make('color')
+                    ->label('Warna'),
             ]);
     }
 }

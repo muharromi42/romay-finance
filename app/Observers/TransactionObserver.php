@@ -11,11 +11,12 @@ class TransactionObserver
      */
     public function created(Transaction $transaction): void
     {
+        $type   = $transaction->category->type; // ambil dari category
         $wallet = $transaction->wallet;
 
-        if ($transaction->type === 'income') {
+        if ($type === 'income') {
             $wallet->increment('balance', $transaction->amount);
-        } elseif ($transaction->type === 'expense') {
+        } elseif ($type === 'expense') {
             $wallet->decrement('balance', $transaction->amount);
         }
     }
@@ -25,21 +26,29 @@ class TransactionObserver
      */
     public function updated(Transaction $transaction): void
     {
-        $wallet = $transaction->wallet;
-        $original = $transaction->getOriginal;
+        // Ambil nilai lama
+        $originalCategoryId = $transaction->getOriginal('category_id');
+        $originalWalletId   = $transaction->getOriginal('wallet_id');
+        $originalAmount     = $transaction->getOriginal('amount');
 
-        // rollback nilai lama
-        if ($original['type'] === 'income') {
-            $wallet->decrement('balance', $original['amount']);
-        } elseif ($original['type'] === 'expence') {
-            $wallet->increment('balance', $original['amount']);
+        $originalCategory = \App\Models\Category::find($originalCategoryId);
+        $originalWallet   = \App\Models\Wallet::find($originalWalletId);
+        $originalType     = $originalCategory->type;
+
+        // Rollback nilai lama ke wallet lama
+        if ($originalType === 'income') {
+            $originalWallet->decrement('balance', $originalAmount);
+        } elseif ($originalType === 'expense') {
+            $originalWallet->increment('balance', $originalAmount);
         }
 
-        // terapkan nilai baru
-        if ($transaction->type === 'income') {
-            $wallet->increment('balance', $transaction->amount);
-        } elseif ($transaction->type === 'expense') {
-            $wallet->decrement('balance', $transaction->amount);
+        // Terapkan nilai baru ke wallet baru
+        $newType = $transaction->category->type;
+
+        if ($newType === 'income') {
+            $transaction->wallet->increment('balance', $transaction->amount);
+        } elseif ($newType === 'expense') {
+            $transaction->wallet->decrement('balance', $transaction->amount);
         }
     }
 
@@ -48,11 +57,13 @@ class TransactionObserver
      */
     public function deleted(Transaction $transaction): void
     {
+        $type   = $transaction->category->type;
         $wallet = $transaction->wallet;
 
-        if ($transaction->type === 'income') {
+        // Balik efek transaksi yang dihapus
+        if ($type === 'income') {
             $wallet->decrement('balance', $transaction->amount);
-        } elseif ($transaction->type === 'increment') {
+        } elseif ($type === 'expense') {
             $wallet->increment('balance', $transaction->amount);
         }
     }

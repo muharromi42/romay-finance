@@ -18,4 +18,14 @@ class Category extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
+    // Accessor untuk warna badge di Filament
+    public function getTypeLabelAttribute(): string
+    {
+        return match ($this->type) {
+            'income'  => 'Pemasukan',
+            'expense' => 'Pengeluaran',
+            'saving'  => 'Tabungan',
+        };
+    }
 }

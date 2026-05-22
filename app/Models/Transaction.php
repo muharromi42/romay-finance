@@ -11,10 +11,16 @@ class Transaction extends Model
         'category_id',
         'wallet_id',
         'amount',
-        'type',
         'note',
         'date'
     ];
+
+    // Ambil type dari category
+    public function getTypeAttribute(): string
+    {
+        return $this->category->type;
+    }
+
 
     public function category(): BelongsTo
     {

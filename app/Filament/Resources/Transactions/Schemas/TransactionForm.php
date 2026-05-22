@@ -23,9 +23,6 @@ class TransactionForm
                 TextInput::make('amount')
                     ->required()
                     ->numeric(),
-                Select::make('type')
-                    ->options(['income' => 'Income', 'expence' => 'Expence', 'transfer' => 'Transfer'])
-                    ->required(),
                 Textarea::make('note')
                     ->columnSpanFull(),
                 DatePicker::make('date')

@@ -16,7 +16,6 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained();
             $table->foreignId('wallet_id')->constrained();
             $table->decimal('amount', 15, 2);
-            $table->enum('type', ['income', 'expence', 'transfer']);
             $table->text('note')->nullable();
             $table->date('date');
             $table->timestamps();

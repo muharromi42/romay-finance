@@ -16,13 +16,29 @@ class TransactionsTable
             ->columns([
                 TextColumn::make('category.name')
                     ->searchable(),
+                TextColumn::make('category.type')
+                    ->label('Tipe')
+                    ->badge()
+                    ->color(fn(string $state): string => match ($state) {
+                        'income'  => 'success',
+                        'expense' => 'danger',
+                        'saving'  => 'warning',
+                        default   => 'gray',
+                    })
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'income'  => 'Pemasukan',
+                        'expense' => 'Pengeluaran',
+                        'saving'  => 'Tabungan',
+                        default   => $state,
+                    }),
+
                 TextColumn::make('wallet.name')
                     ->searchable(),
                 TextColumn::make('amount')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('type')
-                    ->badge(),
+                TextColumn::make('note')
+                    ->searchable(),
                 TextColumn::make('date')
                     ->date()
                     ->sortable(),
